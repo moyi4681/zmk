@@ -8,7 +8,18 @@ sidebar_label: Key Press
 The most basic of behaviors, is the ability to send certain keycode presses and releases in response to activating
 a certain key.
 
-For reference on keycode values, see pages 83-89 of the [USB HID Usage Tables](https://www.usb.org/document-library/hid-usage-tables-12).
+The categories of supported codes are:
+
+- [Keyboard & Keypad](../codes/keyboard-keypad)
+- [Editing](../codes/editing)
+- [Media](../codes/media)
+- [Applications](../codes/applications)
+- [Input Assist](../codes/input-assist)
+- [Power](../codes/power)
+
+Please visit the [codes](../codes) section for a comprehensive list.
+
+For advanced users, user-defined HID codes are also supported but must be encoded, please see [`dt-bindings/zmk/keys.h`](https://github.com/zmkfirmware/zmk/blob/main/app/include/dt-bindings/zmk/keys.h) for further insight.
 
 ## Keycode Defines
 
@@ -20,7 +31,7 @@ provided by ZMK near the top:
 #include <dt-bindings/zmk/keys.h>
 ```
 
-Doing so makes a set of defines such as `A`, `NUM_1`, etc. available for use with these behaviors
+Doing so makes a set of defines such as `A`, `N1`, etc. available for use with these behaviors
 
 :::note
 There is an [open issue](https://github.com/zmkfirmware/zmk/issues/21) to provide a more comprehensive, and
@@ -45,23 +56,4 @@ Example:
 
 ```
 &kp A
-```
-
-## Consumer Key Press
-
-The "consumer key press" behavior allows you to send "consumer" usage page keycodes on press/release.
-These are mostly used for media and power related keycodes, such as sending "Pause", "Scan Track Next",
-"Scan Track Previous", etc.
-
-There are a subset of the full consumer usage IDs found in the `keys.h` include, prefixed with `M_`, e.g. `M_PREV`.
-
-### Behavior Binding
-
-- Reference: `&cp`
-- Parameter: The keycode usage ID from the consumer usage page, e.g. `M_PREV` or `M_EJCT`
-
-Example:
-
-```
-&cp M_PREV
 ```

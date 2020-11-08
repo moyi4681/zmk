@@ -27,6 +27,15 @@ ZMK support for split keyboards requires a few more files than single boards to 
 
 ## New Shield Directory
 
+:::note
+This guide describes how to add shield to the ZMK main repository. If you are building firmware for your
+own prototype or handwired keyboard, it is recommended to use your own user config repository. Follow the
+[user setup guide](./user-setup.md) to create your user config repository first. When following the rest
+of this guide, replace the `app/` directory in the ZMK main repository with the `config/` directory in your
+user config repository. For example, `app/boards/shields/<keyboard_name>` should now be
+`config/boards/shields/<keyboard_name>`.
+:::
+
 Shields for Zephyr applications go into the `boards/shields/` directory; since ZMK's Zephyr application lives in the `app/` subdirectory of the repository, that means the new shield directory should be:
 
 ```bash
@@ -66,7 +75,11 @@ that make sense to have different defaults when this shield is used. One main it
 that usually has a new default value set here is the `ZMK_KEYBOARD_NAME` value,
 which controls the display name of the device over USB and BLE.
 
-The updated new default values should always be wrapped inside a conditional on the shield config name defined in the `Kconfig.shield` file. Here's the simplest example file:
+The updated new default values should always be wrapped inside a conditional on the shield config name defined in the `Kconfig.shield` file. Here's the simplest example file.
+
+:::warning
+Do not make the keyboard name too long, otherwise the bluetooth advertising might fail and you will not be able to find your keyboard from your laptop / tablet.
+:::
 
 ```
 if SHIELD_MY_BOARD
@@ -352,19 +365,19 @@ Here is an example simple keymap for the Kyria, with only one layer:
 		compatible = "zmk,keymap";
 
 		default_layer {
-// ---------------------------------------------------------------------------------------------------------------------------------
-// |  ESC  |  Q  |  W  |  E   |  R   |  T   |                                          |  Y   |  U    |  I    |  O   |   P   |   \  |
-// |  TAB  |  A  |  S  |  D   |  F   |  G   |                                          |  H   |  J    |  K    |  L   |   ;   |   '  |
-// | SHIFT |  Z  |  X  |  C   |  V   |  B   | L SHIFT | L SHIFT |  | L SHIFT | L SHIFT |  N   |  M    |  ,    |  .   |   /   | CTRL |
-//                     | GUI  | DEL  | RET  |  SPACE  |   ESC   |  |   RET   |  SPACE  | TAB  | BSPC  | R-ALT |
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// |   ESC   |    Q    |    W    |    E    |    R    |    T    |                                          |    Y    |    U    |    I    |    O    |    P    |    \    |
+// |   TAB   |    A    |    S    |    D    |    F    |    G    |                                          |    H    |    J    |    K    |    L    |    ;    |    '    |
+// |  SHIFT  |    Z    |    X    |    C    |    V    |    B    | CTRL+A  | CTRL+C  |  |  CTRL+V |  CTRL+X |    N    |    M    |    ,    |    .    |    /    |  R CTRL |
+//                               |   GUI   |   DEL   | RETURN  |  SPACE  | ESCAPE  |  |  RETURN |  SPACE  |   TAB   |   BSPC  |  R ALT  |
 			bindings = <
-	&kp ESC  &kp Q &kp W &kp E &kp R &kp T                                            &kp Y &kp U  &kp I    &kp O   &kp P    &kp BSLH
-	&kp TAB  &kp A &kp S &kp D &kp F &kp G                                            &kp H &kp J  &kp K    &kp L   &kp SCLN &kp QUOT
-	&kp LSFT &kp Z &kp X &kp C &kp V &kp B &kp LSFT &kp LSFT        &kp LSFT &kp LSFT &kp N &kp M  &kp CMMA &kp DOT &kp FSLH &kp RCTL
-	              &kp LGUI &kp DEL &kp RET &kp SPC &kp ESC            &kp RET  &kp SPC  &kp TAB &kp BKSP &kp RALT
+    &kp ESC   &kp Q     &kp W    &kp E     &kp R     &kp T                                                 &kp Y     &kp U     &kp I     &kp O     &kp P    &kp BSLH
+    &kp TAB   &kp A     &kp S    &kp D     &kp F     &kp G                                                 &kp H     &kp J     &kp K     &kp L     &kp SEMI &kp QUOTE
+    &kp LSHFT &kp Z     &kp X    &kp C     &kp V     &kp B      &kp LC(A) &kp LC(C)    &kp LC(V) &kp LC(X) &kp N     &kp M     &kp COMMA &kp DOT   &kp FSLH &kp RCTRL
+                                 &kp LGUI  &kp DEL   &kp RET    &kp SPACE &kp ESC      &kp RET   &kp SPACE &kp TAB   &kp BSPC  &kp RALT
 			>;
 
-			sensor-bindings = <&inc_dec_cp M_VOLU M_VOLD &inc_dec_kp PGUP PGDN>;
+			sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN &inc_dec_kp PG_UP PG_DN>;
 		};
 	};
 };
@@ -372,15 +385,14 @@ Here is an example simple keymap for the Kyria, with only one layer:
 ```
 
 :::note
-The two `#include` lines at the top of the keymap are required in order to bring in the default set of behaviors to make them available to bind, and to import a set of defines for the HID keycodes, so keymaps can use parameters like `NUM_2` or `K` instead of the raw keycode numeric values.
+The two `#include` lines at the top of the keymap are required in order to bring in the default set of behaviors to make them available to bind, and to import a set of defines for the key codes, so keymaps can use parameters like `N2` or `K` instead of the raw keycode numeric values.
 :::
 
 ### Keymap Behaviors
 
 Further documentation on behaviors and bindings is forthcoming, but a summary of the current behaviors you can bind to key positions is as follows:
 
-- `kp` is the "key press" behavior, and takes a single binding argument of the HID keycode from the 'keyboard/keypad" HID usage table.
-- `cp` is the "consumer key press" behavior, and takes a single binding argument of the HID keycode from the "consumer page" HID usage table. This is mostly useful for media keys.
+- `kp` is the "key press" behavior, and takes a single binding argument of the key code from the 'keyboard/keypad" HID usage table.
 - `mo` is the "momentary layer" behaviour, and takes a single binding argument of the numeric ID of the layer to momentarily enable when that key is held.
 - `trans` is the "transparent" behavior, useful to be place in higher layers above `mo` bindings to be sure the key release is handled by the lower layer. No binding arguments are required.
 - `mt` is the "mod-tap" behavior, and takes two binding arguments, the modifier to use if held, and the keycode to send if tapped.
@@ -463,7 +475,7 @@ For split keyboards, make sure to add left hand encoders to the left .overlay fi
 Add the following line to your keymap file to add default encoder behavior bindings:
 
 ```
-sensor-bindings = <&inc_dec_cp M_VOLU M_VOLD>;
+sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
 ```
 
 Add additional bindings as necessary to match the default number of encoders on your board. See the [Encoders](/docs/feature/encoders) and [Keymap](/docs/feature/keymaps) feature documentation for more details.

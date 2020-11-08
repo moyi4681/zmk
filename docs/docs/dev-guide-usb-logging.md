@@ -24,6 +24,13 @@ It is recommended to only enable logging when needed, and not leaving it on by d
 The following KConfig values need to be set, either by copy and pasting into the `app/prj.conf` file, or by running
 `west build -t menuconfig` and manually enabling the various settings in that UI.
 
+:::note
+If you are debugging your own keyboard in your [user config repository](./user-setup.md), use
+`config/boards/shields/<your_keyboard>/<your_keyboard>.conf` instead of `app/prj.conf`. In Github
+Actions, you can search the `Kconfig file` build log to verify the options above have been enabled
+for you successfully.
+:::
+
 ```
 # Turn on logging, and set ZMK logging to debug output
 CONFIG_LOG=y
@@ -59,6 +66,7 @@ defaultValue="linux"
 values={[
 {label: 'Linux', value: 'linux'},
 {label: 'Windows', value: 'win'},
+{label: 'MacOS', value: 'macos'}
 ]}>
 <TabItem value="linux">
 
@@ -79,6 +87,17 @@ On Windows, you can use [PuTTY](https://www.putty.org/). Once installed, use Dev
 
 If you already have the Ardunio IDE installed you can also use its built-in Serial Monitor.
 
+</TabItem>
+<TabItem value="macos">
+
+On MacOS, the device name is something like `/dev/tty.usbmodemXXXXX` where `XXXXX` is some numerical ID.
+You can connect to the device with [tio](https://tio.github.io/) (can be installed via [Homebrew](https://formulae.brew.sh/formula/tio)):
+
+```
+sudo tio /dev/tty.usbmodem14401
+```
+
+You should see tio printing `Disconnected` or `Connected` when you disconnect or reconnect the USB cable.
 </TabItem>
 </Tabs>
 
